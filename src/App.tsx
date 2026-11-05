@@ -270,11 +270,21 @@ function FeatureStory({ onOpen }: { onOpen: (image: string, title: string) => vo
   const activeProject = projects[activeStep];
   const localizedProject = language === 'ar' ? arabicProjects[activeStep] : { title: activeProject.title, category: activeProject.category, description: activeProject.description, imageAlt: activeProject.imageAlt, details: activeProject.details };
   return <div ref={trackRef} className="feature-story-scroll-track mt-10">
-    <div ref={storyRef} className="feature-story feature-story-overlay-layout">
+    <div ref={storyRef} className="feature-story feature-story-centered-layout">
+      <div className="feature-story-heading" aria-live="polite">
+        <AnimatePresence mode="wait" custom={direction}>
+          <motion.div key={`${activeStep}-${language}`} initial={reduceMotion ? { opacity: 1 } : { opacity: 0, y: direction > 0 ? 14 : -14 }} animate={{ opacity: 1, y: 0 }} exit={reduceMotion ? { opacity: 0 } : { opacity: 0, y: direction > 0 ? -14 : 14 }} transition={{ duration: reduceMotion ? 0 : .28 }}>
+            <span className="feature-story-heading-step">0{activeStep + 1} / 0{projects.length} · {localizedProject.category}</span>
+            <h3>{localizedProject.title}</h3>
+            <p>{localizedProject.description}</p>
+            {activeProject.category === 'VISION AI' && <p className="feature-story-heading-trust">✓ {bilingual(language, 'Vision AI prepares drafts, but never sends or changes mail.', 'يجهّز Vision AI المسودات، لكنه لا يرسل الرسائل أو يغيّرها.')}</p>}
+            <div className="feature-story-heading-details">{localizedProject.details.map((detail) => <span key={detail}>{detail}</span>)}</div>
+          </motion.div>
+        </AnimatePresence>
+      </div>
       <div className="feature-story-visual-column">
         <div className="feature-story-sticky">
-          <button type="button" className={`feature-story-visual ${activeProject.image === '/multi.png' ? 'feature-story-visual-multi' : ''}`} onClick={() => onOpen(activeProject.video ?? activeProject.image, localizedProject.title)} aria-label={bilingual(language, `View ${localizedProject.title} preview`, `عرض معاينة ${localizedProject.title}`)} style={{ backgroundImage: activeProject.image === '/multi.png' ? 'none' : `url("${activeProject.image}")` }}>
-            {activeProject.image !== '/multi.png' && <span className="feature-story-visual-shade"/>}
+          <button type="button" className={`feature-story-visual ${activeProject.image === '/multi.png' ? 'feature-story-visual-multi' : ''}`} onClick={() => onOpen(activeProject.video ?? activeProject.image, localizedProject.title)} aria-label={bilingual(language, `View ${localizedProject.title} preview`, `عرض معاينة ${localizedProject.title}`)}>
             <AnimatePresence mode="wait" custom={direction}>
               {activeProject.video ? (
                 <motion.video
@@ -306,17 +316,6 @@ function FeatureStory({ onOpen }: { onOpen: (image: string, title: string) => vo
               )}
             </AnimatePresence>
             {activeProject.image !== '/multi.png' && <><span className="feature-story-visual-label"><i/>{activeProject.category}</span><span className="feature-story-visual-count">0{activeStep + 1}<small> / 0{projects.length}</small></span></>}
-            <div className="feature-story-overlay-copy" aria-live="polite">
-              <AnimatePresence mode="wait" custom={direction}>
-                <motion.div key={`${activeStep}-${language}`} initial={reduceMotion ? { opacity: 1 } : { opacity: 0, y: direction > 0 ? 18 : -18 }} animate={{ opacity: 1, y: 0 }} exit={reduceMotion ? { opacity: 0 } : { opacity: 0, y: direction > 0 ? -18 : 18 }} transition={{ duration: reduceMotion ? 0 : .3 }}>
-                  <span className="feature-story-overlay-kicker">0{activeStep + 1} / 0{projects.length} · {localizedProject.category}</span>
-                  <h3>{localizedProject.title}</h3>
-                  <p>{localizedProject.description}</p>
-                  {activeProject.category === 'VISION AI' && <p className="feature-story-overlay-trust">{bilingual(language, '✓ Vision AI prepares drafts, but never sends or changes mail.', '✓ يجهّز Vision AI المسودات، لكنه لا يرسل الرسائل أو يغيّرها.')}</p>}
-                  <div className="feature-story-overlay-details">{localizedProject.details.map((detail) => <span key={detail}>{detail}</span>)}</div>
-                </motion.div>
-              </AnimatePresence>
-            </div>
             <div className="feature-story-progress" aria-hidden="true"><span style={{ width: `${scrollProgress * 100}%` }}/></div>
           </button>
         </div>
